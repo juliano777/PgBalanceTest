@@ -18,36 +18,36 @@ public class PgBalanceTest{
 	public static void main(String[] args) throws ParseException {
 
 		// Options
-		Options options = new Options();
+		Options args = new Options();
 
 		/*
-		 * 
+		 *
 		 * https://paquier.xyz/postgresql-2/postgres-10-libpq-read-write/
-		 * 
+		 *
 		 * https://jdbc.postgresql.org/documentation/head/connect.html
-		 * 
+		 *
 		 */
 
 		// add -h option
-		options.addOption("h", true, "Host[:port]");
+		args.addOption("h", true, "Host[:port]");
 
 		// add -d option
-		options.addOption("d", true, "Database");
+		args.addOption("d", true, "Database");
 
 		// add -U option
-		options.addOption("U", true, "User");
+		args.addOption("U", true, "User");
 
 		// add -c option
-		options.addOption("c", true, "SQL Command");
+		args.addOption("c", true, "SQL Command");
 
 		// add -w option
-		options.addOption("w", false, "Prompt password");
-		
+		args.addOption("w", false, "Prompt password");
+
 		// add -b option
-		options.addOption("b", false, "Load balance");
+		args.addOption("b", false, "Load balance");
 
 		CommandLineParser parser = new DefaultParser();
-		CommandLine cmd = parser.parse(options, args);
+		CommandLine cmd = parser.parse(args, args);
 
 		String HOST = cmd.getOptionValue("h", null);
 		String DB = cmd.getOptionValue("d", "postgres");
@@ -60,7 +60,7 @@ public class PgBalanceTest{
 				String.format("jdbc:postgresql:%s", DB)
 				: String.format("jdbc:postgresql://%s/%s", HOST, DB)
 				);
-		
+
 		if (LOAD_BALANCE && HOST != null) {str_conn += "?loadBalanceHosts=true";}
 
 		Console console = System.console();
@@ -75,15 +75,15 @@ public class PgBalanceTest{
 			pw = String.valueOf(console.readPassword("\nEnter password: "));
 			props.setProperty("password", pw);
 		}
-		
+
 		try {
 			Connection CONN = DriverManager.getConnection(str_conn, props);
 			Statement stmt = CONN.createStatement();
-			
+
 			if (LOAD_BALANCE) {
 				str_conn += "?loadBalanceHosts=true";
-				ResultSet rs = stmt.executeQuery(SQL);								
-				
+				ResultSet rs = stmt.executeQuery(SQL);
+
 				if (rs != null && rs.next()) {
 					System.out.println(rs.getString(1));
 					rs.close();
@@ -91,8 +91,8 @@ public class PgBalanceTest{
 			} else {
 				stmt.execute(SQL);
 			}
-			
-			stmt.close();			
+
+			stmt.close();
 			CONN.close();
 		}
 
